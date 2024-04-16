@@ -17,10 +17,7 @@ def get_and_print_api_data(url):
 def lambda_handler(event, context):
     api_url = "https://api.kanye.rest/"
     data = get_and_print_api_data(api_url)
-    return {
-        'statusCode': 200,
-        'body': json.dumps(data, indent=4)
-    }
+    return {"statusCode": 200, "body": json.dumps(data, indent=4)}
 
 
 if __name__ == "__main__":
