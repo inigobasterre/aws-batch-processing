@@ -11,7 +11,7 @@ def get_and_print_api_data(url):
         return response.json()
 
     except requests.exceptions.RequestException as e:
-        print("Error fetching data", e)
+        print("Error fetching data:", e)
 
 
 def lambda_handler(event, context):

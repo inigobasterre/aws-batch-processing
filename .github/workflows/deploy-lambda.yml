@@ -54,8 +54,8 @@ jobs:
         zip -r ${{ env.LAMBDA_FUNCTION_NAME }}-layer.zip .
         layer_version=$(aws lambda publish-layer-version --layer-name ${{ env.LAMBDA_FUNCTION_NAME }}-layer --zip-file fileb://${{ env.LAMBDA_FUNCTION_NAME }}-layer.zip --compatible-runtimes python3.12)
 
-        # Use grep to match the expression and extract the published layer version ARN
-        layer_version_arn=$(echo "$layer_version" | grep -E 'arn:[a-zA-Z0-9-]+:lambda:[a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-[0-9]:[0-9]{12}:layer:[a-zA-Z0-9-_]+:[0-9]+|arn:[a-zA-Z0-9-]+:lambda:::awslayer:[a-zA-Z0-9-_]+')
+        # Use jq to unpack the JSON and extract the published layer version ARN
+        layer_version_arn=$(echo "$layer_version" | jq -r '.LayerVersionArn')
 
         aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNCTION_NAME }} --layers $layer_version_arn
 
