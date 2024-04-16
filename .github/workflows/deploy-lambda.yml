@@ -57,5 +57,5 @@ jobs:
 
     - name: Deploy Code to Lambda
       run: |
-        cd data-pipelines/${{ env.LAMBDA_FUNCTION_NAME }} && zip -j code.zip .
-        aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNCTION_NAME }} --zip-file fileb://code.zip
+        cd data-pipelines/${{ env.LAMBDA_FUNCTION_NAME }} && zip -r ${{ env.LAMBDA_FUNCTION_NAME }}-code.zip . -x requirements.txt
+        aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNCTION_NAME }} --zip-file fileb://${{ env.LAMBDA_FUNCTION_NAME }}-code.zip
