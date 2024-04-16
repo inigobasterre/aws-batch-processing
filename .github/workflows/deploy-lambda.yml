@@ -52,8 +52,12 @@ jobs:
         cd ${{ env.LAMBDA_FUNCTION_NAME }}-layer
         pip install -r ../data-pipelines/${{ env.LAMBDA_FUNCTION_NAME }}/requirements.txt -t python/lib/python3.12/site-packages/
         zip -r ${{ env.LAMBDA_FUNCTION_NAME }}-layer.zip .
-        aws lambda publish-layer-version --layer-name ${{ env.LAMBDA_FUNCTION_NAME }}-layer --zip-file fileb://${{ env.LAMBDA_FUNCTION_NAME }}-layer.zip --compatible-runtimes python3.12
-        aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNCTION_NAME }} --layers ${{ env.LAMBDA_FUNCTION_NAME }}-layer
+        layer_version=$(aws lambda publish-layer-version --layer-name ${{ env.LAMBDA_FUNCTION_NAME }}-layer --zip-file fileb://${{ env.LAMBDA_FUNCTION_NAME }}-layer.zip --compatible-runtimes python3.12)
+
+        # Use grep to match the expression and extract the published layer version ARN
+        layer_version_arn=$(echo "$layer_version" | grep -Eo 'arn:[a-zA-Z0-9-]+:lambda:[a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-\d{1}:\d{12}:layer:[a-zA-Z0-9-_]+:[0-9]+|arn:[a-zA-Z0-9-]+:lambda:::awslayer:[a-zA-Z0-9-_]+')
+
+        aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNCTION_NAME }} --layers $layer_version_arn
 
     - name: Deploy Code to Lambda
       run: |
