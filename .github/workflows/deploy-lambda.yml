@@ -50,8 +50,8 @@ jobs:
       run: |
         mkdir ${{ env.LAMBDA_FUNCTION_NAME }}-layer
         cd ${{ env.LAMBDA_FUNCTION_NAME }}-layer
-        pip install -r requirements.txt -t python/lib/python3.12/site-packages/
-        zip -r ${{ env.LAMBDA_FUNCTION_NAME }}-layer.zip . -x requirements.txt
+        pip install -r ../requirements.txt -t python/lib/python3.12/site-packages/
+        zip -r ${{ env.LAMBDA_FUNCTION_NAME }}-layer.zip .
         aws lambda publish-layer-version --layer-name ${{ env.LAMBDA_FUNCTION_NAME }}-layer --zip-file fileb://${{ env.LAMBDA_FUNCTION_NAME }}-layer.zip --compatible-runtimes python3.12
 
 
