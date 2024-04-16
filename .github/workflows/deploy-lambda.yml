@@ -25,6 +25,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: eu-west-2
 
     - name: Print changed files # To properly debug what is being deployed (It can be removed).
