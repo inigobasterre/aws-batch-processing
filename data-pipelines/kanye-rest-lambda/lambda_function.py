@@ -8,18 +8,18 @@ def get_and_print_api_data(url):
 
         response.raise_for_status()
 
-        data = response.json()
+        return response.json()
 
-        print(json.dumps(data, indent=4))
     except requests.exceptions.RequestException as e:
         print("Error fetching data:", e)
 
 
 def lambda_handler(event, context):
-    # TODO implement
+    api_url = "https://api.kanye.rest/"
+    data = get_and_print_api_data(api_url)
     return {
         'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
+        'body': json.dumps(data, indent=4)
     }
 
 
