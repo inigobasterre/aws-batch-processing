@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '**.py' # Change to the file extension of the language that you are using.
+      - '**.py'
 
 permissions:
       id-token: write
@@ -58,6 +58,7 @@ jobs:
         layer_version_arn=$(echo "$layer_version" | jq -r '.LayerVersionArn')
 
         aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNCTION_NAME }} --layers $layer_version_arn
+        sleep 10
 
     - name: Deploy Code to Lambda
       run: |
