@@ -1,4 +1,4 @@
-name: Deploy Python Lambda
+name: Deploy Infra
 
 on:
   push:
