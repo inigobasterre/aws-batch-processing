@@ -1,0 +1,60 @@
+name: Deploy Python Lambda
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*infra.yml'
+
+permissions:
+      id-token: write
+      contents: read
+
+env:
+  LAMBDA_FUNCTION_NAME: 'kanye-rest-lambda'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2 # To fetch the current commit and its parent (so we can compare)
+
+    - name: Setup AWS CLI
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        audience: sts.amazonaws.com
+        aws-region: eu-west-1
+        role-to-assume: arn:aws:iam::647746917454:role/inigo-basterretxea-github-actions
+
+    - name: Print changed files # To properly debug what is being deployed (It can be removed).
+      run: |
+        echo "List of changed files:" 
+        echo $(git diff --name-only HEAD^ HEAD)
+
+    - name: Deploy VPC
+      run: |
+        aws ec2 create-vpc \
+        --cidr-block 10.0.0.0/16 \
+        --region eu-west-1 
+        --tag-specification Tags=[{Key=_project,Value=inigo-basterretxea-batch-processing \
+        Key=_purpose,Value=testing \
+        Key=_business_criticality,Value=low \
+        Key=_end_date,Value=150624 \
+        Key=_owner_email,Value=inigo.basterretxea@mesh-ai.com}]
+
+    # - name: Deploy Lambda
+    #   run: |
+    #     aws lambda create-function \
+    #     --function-name kanye-rest-lambda \
+    #     --runtime python3.12 \
+    #     --region eu-west-1
+    #     --tag-specification Tags=[{Key=_project,Value=inigo-basterretxea-batch-processing \
+    #         Key=_purpose,Value=testing \
+    #         Key=_business_criticality,Value=low \
+    #         Key=_end_date,Value=150624 \
+    #         Key=_owner_email,Value=inigo.basterretxea@mesh-ai.com}]
