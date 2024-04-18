@@ -15,12 +15,18 @@ provider "aws" {
 
 resource "aws_s3_bucket" "tf-state-bucket" {
   bucket = "inigo-basterretxea-tf-state-bucket"
-
   tags = {
     _project = "inigo-basterretxea-batch-processing"
     _purpose = "testing"
     _business_criticality = "low"
     _end_date = "150624"
     _owner_email = "inigo.basterretxea@mesh-ai.com"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "tf-state-bucket-versioning" {
+  bucket  = aws_s3_bucket.tf-state-bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
