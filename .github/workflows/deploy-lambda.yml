@@ -58,7 +58,7 @@ jobs:
         layer_version_arn=$(echo "$layer_version" | jq -r '.LayerVersionArn')
 
         aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNCTION_NAME }} --layers $layer_version_arn
-        sleep 10
+        sleep 5
 
     - name: Deploy Code to Lambda
       run: |
