@@ -50,7 +50,7 @@ jobs:
         Key=_purpose,Value=testing \
         Key=_business_criticality,Value=low \
         Key=_end_date,Value=150624 \
-        Key=_owner_email,Value=inigo.basterretxea@mesh-ai.com}])
+        Key=_owner_email,Value=inigo.basterretxea@mesh-ai.com
 
 
     # - name: Deploy Lambda
