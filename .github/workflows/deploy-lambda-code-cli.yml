@@ -28,7 +28,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v2
       with:
         audience: sts.amazonaws.com
-        aws-region: eu-west-2
+        aws-region: eu-west-1
         role-to-assume: arn:aws:iam::647746917454:role/inigo-basterretxea-github-actions
 
     - name: Print changed files # To properly debug what is being deployed (It can be removed).
