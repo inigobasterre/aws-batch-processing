@@ -45,7 +45,7 @@ jobs:
         # Use jq to unpack the JSON and extract the published layer version ARN
         vpc_id=$(echo "$vpc" | jq -r '.VpcId')
         sleep 10
-        aws ec2 create-tags --resources $vpc_id --tags 'Key=\"Name\",Value=\"inigo-basterretxea-batch-processing-vpc\" Key=\"_project\",Value=\"inigo-basterretxea-batch-processing\" Key=\"_purpose\",Value=\"testing\" Key=\"_business_criticality\",Value=\"low\" Key=\"_end_date\",Value=\"150624\" Key=\"_owner_email\",Value=\"inigo.basterretxea@mesh-ai.com\"'
+        aws ec2 create-tags --resources $vpc_id --tags 'Key="Name",Value="inigo-basterretxea-batch-processing-vpc"' 'Key="_project",Value="inigo-basterretxea-batch-processing"' 'Key="_purpose",Value="testing"' 'Key="_business_criticality",Value="low"' 'Key="_end_date",Value="150624"' 'Key="_owner_email",Value="inigo.basterretxea@mesh-ai.com"'
 
 
     # - name: Deploy Lambda
