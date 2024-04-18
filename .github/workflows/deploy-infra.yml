@@ -43,7 +43,7 @@ jobs:
         --region eu-west-1)
 
         # Use jq to unpack the JSON and extract the published layer version ARN
-        vpc_id=$(echo "$vpc_id" | jq -r '.VpcId')
+        vpc_id=$(echo "$vpc" | jq -r '.VpcId')
         sleep 10 
         aws ec2 create-tags --resources $vpc_id --tags Key=Name,Value=inigo-basterretxea-batch-processing-vpc \
         Key=_project,Value=inigo-basterretxea-batch-processing \
