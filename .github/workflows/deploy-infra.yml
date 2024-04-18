@@ -41,7 +41,8 @@ jobs:
         aws ec2 create-vpc \
         --cidr-block 10.0.0.0/16 \
         --region eu-west-1 
-        --tag-specification Tags=[{Key=_project,Value=inigo-basterretxea-batch-processing \
+        --tag-specifications Tags=[{Key=Name,Value=inigo-basterretxea-batch-processing-vpc \
+        Key=_project,Value=inigo-basterretxea-batch-processing \
         Key=_purpose,Value=testing \
         Key=_business_criticality,Value=low \
         Key=_end_date,Value=150624 \
