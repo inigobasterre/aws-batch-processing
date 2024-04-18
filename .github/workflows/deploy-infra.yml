@@ -40,7 +40,7 @@ jobs:
       run: |
        vpc=$(aws ec2 create-vpc \
         --cidr-block 10.0.0.0/16 \
-        --region eu-west-1 
+        --region eu-west-1)
 
         # Use jq to unpack the JSON and extract the published layer version ARN
         vpc_id=$(echo "$layer_version" | jq -r '.VpcId')
