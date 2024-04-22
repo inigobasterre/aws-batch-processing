@@ -1,12 +1,6 @@
 resource "aws_s3_bucket" "tf-state-bucket" {
   bucket = "inigo-basterretxea-tf-state-bucket"
-  tags = {
-    _project = "inigo-basterretxea-batch-processing"
-    _purpose = "testing"
-    _business_criticality = "low"
-    _end_date = "150624"
-    _owner_email = "inigo.basterretxea@mesh-ai.com"
-  }
+  tags = var.tags
 }
 
 resource "aws_s3_bucket_versioning" "tf-state-bucket-versioning" {
@@ -21,13 +15,7 @@ resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
   hash_key = "LockID"
   read_capacity = 20
   write_capacity = 20
-  tags = {
-    _project = "inigo-basterretxea-batch-processing"
-    _purpose = "testing"
-    _business_criticality = "low"
-    _end_date = "150624"
-    _owner_email = "inigo.basterretxea@mesh-ai.com"
-  }
+  tags = var.tags
  
   attribute {
     name = "LockID"
