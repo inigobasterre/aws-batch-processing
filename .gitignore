@@ -2,3 +2,4 @@
 .DS*
 *.terraform*
 *.tfstate*
+*.zip
