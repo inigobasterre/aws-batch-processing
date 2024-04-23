@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.16"
+      version = "~> 5.32.0"
     }
   }
 
@@ -10,5 +10,6 @@ terraform {
 }
 
 provider "aws" {
+  profile = "data-spikes.AWSAdministratorAccess"
   region = "eu-west-1"
 }
