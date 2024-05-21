@@ -33,7 +33,7 @@ resource "aws_nat_gateway" "example" {
   depends_on = [aws_vpc.main]
 }
 
-resource "aws_security_group" "example" {
+resource "aws_security_group" "test" {
   vpc_id = aws_vpc.main.id
   description = "Security group to allow outbound from the VPC"
   depends_on = [aws_vpc.main]
