@@ -21,8 +21,30 @@ resource "aws_subnet" "public_subnet" {
   }, var.tags)
 }
 
+resource "aws_nat_gateway" "example" {
+  subnet_id     = aws_subnet.private_subnet.id
+
+  tags = merge({
+    Name = "inigo-basterretxea-nat-gateway"
+  }, var.tags)
+
+  # To ensure proper ordering, it is recommended to add an explicit dependency
+  # on the Internet Gateway for the VPC.
+  depends_on = [aws_vpc.main]
+}
+
 resource "aws_security_group" "example" {
   vpc_id = aws_vpc.main.id
+  description = "Security group to allow outbound from the VPC"
+  depends_on = [aws_vpc.main]
 
-  egress  = []
+  egress {
+    from_port = "0"
+    to_port   = "0"
+    protocol  = "-1"
+    self      = "true"
+  }
+  tags = merge({
+    Name = "inigo-basterretxea-vpc-sg"
+  }, var.tags)
 }
