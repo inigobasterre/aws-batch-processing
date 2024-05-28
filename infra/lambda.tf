@@ -4,6 +4,9 @@ variable "lambda_function_name" {
 variable "lambda_layer_name" {
   default = "requests-layer"
 }
+variable "lambda_python_version" {
+  default = "python3.9"
+}
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
@@ -25,18 +28,19 @@ data "archive_file" "kanye_rest_src" {
 
 data "archive_file" "kanye_rest_layer" {
   type        = "zip"
-  source_dir  = "${dirname(abspath(path.root))}/kanye-rest-layer"
+  source_dir  = "${dirname(abspath(path.root))}/${var.lambda_layer_name}"
   output_path = "${dirname(abspath(path.root))}/${var.lambda_layer_name}.zip"
 }
 resource "aws_lambda_layer_version" "kanye_rest_layer" {
   filename   = data.archive_file.kanye_rest_layer.output_path
   layer_name = var.lambda_layer_name
-  compatible_runtimes = ["python3.12"]
+  compatible_runtimes = [var.lambda_python_version]
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
   name               = "iam_for_lambda"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  tags = var.tags
 }
 
 
@@ -45,6 +49,7 @@ resource "aws_iam_role" "iam_for_lambda" {
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
   name              = "/aws/lambda/${var.lambda_function_name}"
   retention_in_days = 14
+  tags = var.tags
 }
 
 # See also the following AWS managed policy: AWSLambdaBasicExecutionRole
@@ -67,11 +72,16 @@ resource "aws_iam_policy" "lambda_logging" {
   path        = "/"
   description = "IAM policy for logging from a lambda"
   policy      = data.aws_iam_policy_document.lambda_logging.json
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.lambda_logging.arn
+}
+resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
 
@@ -79,11 +89,11 @@ resource "aws_lambda_function" "kanye_rest_lambda" {
   function_name = var.lambda_function_name
   role = aws_iam_role.iam_for_lambda.arn
   filename = data.archive_file.kanye_rest_src.output_path
-  runtime = "python3.12"
+  runtime = var.lambda_python_version
   handler = "lambda_function.lambda_handler"
   layers = [aws_lambda_layer_version.kanye_rest_layer.arn]
   vpc_config {
-    security_group_ids = []
+    security_group_ids = [aws_security_group.lambda_sg.id]
     subnet_ids = [aws_subnet.private_subnet.id]
   }
 
@@ -100,10 +110,6 @@ resource "aws_lambda_function" "kanye_rest_lambda" {
     aws_cloudwatch_log_group.lambda_log_group,
     aws_vpc.main
   ]
-}
 
-
-resource "aws_lambda_function_url" "kanye_rest_url" {
-  function_name      = aws_lambda_function.kanye_rest_lambda.function_name
-  authorization_type = "NONE"
+  tags = var.tags
 }
