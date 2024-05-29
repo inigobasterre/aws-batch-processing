@@ -94,7 +94,7 @@ resource "aws_lambda_function" "kanye_rest_lambda" {
   layers = [aws_lambda_layer_version.kanye_rest_layer.arn]
   vpc_config {
     security_group_ids = [aws_security_group.lambda_sg.id]
-    subnet_ids = [aws_subnet.private_subnet.id]
+    subnet_ids = [aws_subnet.private_subnet[0].id]
   }
 
   # Advanced logging controls (optional)

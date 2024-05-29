@@ -6,9 +6,22 @@ resource "aws_vpc" "main" {
   }, var.tags)
 }
 
+variable "private_subnets" {
+  default = ["10.0.1.0/24","10.0.3.0/24"]
+}
+
+data "aws_availability_zones" "availability_zones" {
+  all_availability_zones = true
+  filter {
+    name = "region-name"
+    values = ["eu-west-1"]
+  }
+}
 resource "aws_subnet" "private_subnet" {
+  count = length(var.private_subnets)
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = var.private_subnets[count.index]
+  availability_zone = data.aws_availability_zones.availability_zones.names[count.index]
   tags = merge({
     Name = "inigo-basterretxea-private-subnet"
   }, var.tags)
@@ -49,32 +62,6 @@ resource "aws_nat_gateway" "nat_gw" {
   depends_on = [aws_internet_gateway.igw]
 }
 
-# resource "aws_network_acl" "egress_only_acl" {
-#   vpc_id = aws_vpc.main.id
-#   subnet_ids = [aws_subnet.public_subnet.id]
-
-#   egress {
-#     protocol   = -1
-#     rule_no    = 200
-#     action     = "allow"
-#     cidr_block = "0.0.0.0/0"
-#     from_port  = 0
-#     to_port    = 0
-#   }
-#   ingress {
-#     protocol   = -1
-#     rule_no    = 100
-#     action     = "deny"
-#     cidr_block = "0.0.0.0/0"
-#     from_port  = 0
-#     to_port    = 0
-#   }
-
-#   tags = merge({
-#     Name = "inigo-basterretxea-vpc-acl"
-#   }, var.tags)
-# }
-
 resource "aws_security_group" "lambda_sg" {
   vpc_id = aws_vpc.main.id
   description = "Security group to allow outbound from the VPC"
@@ -92,19 +79,21 @@ resource "aws_security_group" "lambda_sg" {
 }
 
 resource "aws_route_table" "private_route_table" {
+  count = length(var.private_subnets)
   vpc_id = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gw.id
   }
   tags = merge({
-    Name = "inigo-basterretxea-vpc-private-rt"
+    Name = "inigo-basterretxea-vpc-private-rt-${var.private_subnets[count.index]}"
   }, var.tags)
 }
 
 resource "aws_route_table_association" "private_subnet_association" {
-  subnet_id      = aws_subnet.private_subnet.id
-  route_table_id = aws_route_table.private_route_table.id
+  count = length(var.private_subnets)
+  subnet_id      = aws_subnet.private_subnet[count.index].id
+  route_table_id = aws_route_table.private_route_table[count.index].id
 }
 resource "aws_route_table_association" "public_subnet_association" {
   subnet_id      = aws_subnet.public_subnet.id
